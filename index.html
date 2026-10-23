@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STRUCT — Honors Structural Analysis & Truss Unit</title>
+<style>
+:root{--env:#070D1E;--env2:#0A162B;--lesson:#11233A;--lesson2:#132A44;--work:#1A324D;--recess:#0B1C31;--recess2:#0D223D;--line:rgba(255,255,255,.07);--edge:rgba(255,255,255,.055);--oc:rgba(0,0,0,.42);--steel:#EEF3F9;--steel2:#D8E2EE;--muted:#7E94B0;--muted2:#6E829C;--brass:#C6A15A;--gold:#D8B86A;--tens:#E07A3A;--comp:#4F8FD6;--ok:#2EA87A;--bad:#E0504A;--mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;--sans:Aptos,"Segoe UI Variable","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style","Palatino Linotype",Georgia,serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:78px}
+body{margin:0;color:var(--steel2);font-family:var(--sans);font-size:15.8px;line-height:1.68;background:linear-gradient(180deg,var(--env) 0%,var(--env2) 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.045;background-image:linear-gradient(rgba(255,255,255,.9) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.9) 1px,transparent 1px);background-size:40px 40px;mask:radial-gradient(ellipse 90% 60% at 50% 0%,black 35%,transparent 78%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(900px 520px at 50% -8%,rgba(198,161,90,.07),transparent 68%),radial-gradient(700px 400px at 82% 10%,rgba(79,143,214,.05),transparent 70%)}
+.title{position:sticky;top:0;z-index:40;background:rgba(7,13,30,.94);border-bottom:1px solid rgba(255,255,255,.06);box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 24px rgba(0,0,0,.38)}
+.title::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--brass),#E8C88A 50%,var(--brass));opacity:.85}
+.title-inner{max-width:920px;margin:0 auto;padding:11px 18px;display:flex;justify-content:space-between;gap:16px;align-items:center;position:relative}
+.brand{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mark{width:28px;height:28px;border:1px solid rgba(198,161,90,.5);display:grid;place-items:center;font-family:var(--mono);font-size:10px;color:var(--gold);background:rgba(198,161,90,.14)}
+.brand h1{margin:0;font-family:var(--serif);font-size:21px;letter-spacing:-.02em;display:flex;gap:8px;align-items:baseline;font-weight:700;color:var(--steel)}
+.brand h1 em{font-style:normal;font-family:var(--sans);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#CDBB8F;border:1px solid rgba(198,161,90,.30);padding:2px 7px;background:rgba(255,255,255,.05);font-weight:700}
+.sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.head-right{display:flex;gap:12px;align-items:center}
+.mini{width:260px;height:42px;border:1px solid rgba(255,255,255,.07);background:var(--recess);box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 10px 16px rgba(0,0,0,.34)}
+.prog{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;line-height:1.3}
+.prog b{color:var(--steel);font-size:10.5px}
+.shell{max-width:920px;margin:0 auto;display:grid;grid-template-columns:190px 1fr;gap:18px;padding:18px 14px 44px}
+.nav{position:sticky;top:68px;align-self:start;background:linear-gradient(180deg,#0F2240 0%,#0D1D35 100%);border:1px solid rgba(255,255,255,.06);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 1px 0 rgba(0,0,0,.45),0 12px 22px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.04)}
+.nav-hd{padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.nav-hd b{font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--steel)}
+.nav-hd span{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.nav-list{padding:6px;display:grid;gap:4px}
+.nav-list a{display:flex;gap:8px;align-items:center;padding:8px 8px;border:1px solid transparent;text-decoration:none;color:var(--muted);transition:background .18s,border-color .18s,color .18s}
+.nav-list a:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.07);color:var(--steel2)}
+.nav-list a.active{background:rgba(198,161,90,.10);border-color:rgba(198,161,90,.22);color:var(--steel)}
+.nav-list a.active .num{border-color:rgba(198,161,90,.45);color:var(--gold)}
+.num{width:22px;height:22px;display:grid;place-items:center;font-family:var(--mono);font-size:10px;border:1px solid rgba(255,255,255,.12);color:var(--muted2);background:rgba(255,255,255,.03);flex:0 0 22px}
+.dot{width:6px;height:6px;background:var(--muted2);opacity:.9;transition:background .18s}
+.dot.done{background:var(--ok);box-shadow:0 0 8px rgba(46,168,122,.45)}
+.nav-meta{padding:8px 10px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+</style>
+</head>
+<style>
+.main{display:grid;gap:16px;min-width:0}
+.sheet{background:var(--lesson);border:1px solid rgba(255,255,255,.06);box-shadow:0 1px 0 var(--edge) inset,0 1px 0 var(--oc),0 14px 24px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.03)}
+.sheet-hd{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.eyebrow{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.sheet-hd h2{margin:4px 0 6px;font-family:var(--serif);font-size:26px;line-height:1.1;letter-spacing:-.02em;color:var(--steel);font-weight:700}
+.sheet-hd p{margin:0;color:var(--muted);font-size:13.6px;line-height:1.55;max-width:62ch}
+.badge{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);padding:8px 9px;line-height:1.35;text-align:center;white-space:nowrap}
+.body{padding:14px 16px 16px;display:grid;gap:14px}
+.prose{color:var(--steel2);font-size:14.8px;line-height:1.66}
+.prose b{color:var(--steel)}
+.kicker{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.h3{margin:0;font-family:var(--serif);font-size:16.5px;color:var(--steel);letter-spacing:-.01em}
+.wb{background:var(--work);border:1px solid rgba(255,255,255,.07);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 8px 18px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.03);overflow:hidden;transition:border-color .18s}
+.wb:hover{border-color:rgba(198,161,90,.18)}
+.wb-hd{padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015))}
+.wb-hd b{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--steel)}
+.tag{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(198,161,90,.28);background:rgba(198,161,90,.12);padding:3px 6px}
+.wb-bd{padding:12px;background:var(--recess);box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 12px 20px rgba(0,0,0,.38)}
+.svg-frame{width:100%;height:auto;display:block;border:1px solid rgba(255,255,255,.06);background:var(--recess2);box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 10px 18px rgba(0,0,0,.34)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2s{display:grid;grid-template-columns:1.18fr .9fr;gap:12px}
+@media(max-width:860px){.shell{grid-template-columns:1fr}.nav{position:relative;top:auto}.grid2,.grid2s{grid-template-columns:1fr}.mini{width:160px}}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid rgba(198,161,90,.28);background:linear-gradient(180deg,#C6A15A,#B8923E);color:#1A1206;font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:.01em;padding:8px 12px;cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 6px 14px rgba(0,0,0,.22);transition:transform .14s,filter .14s}
+.btn:hover{filter:brightness(1.06)}.btn:active{transform:translateY(1px)}
+.btn.ghost{background:rgba(255,255,255,.06);color:var(--steel);border-color:rgba(255,255,255,.10);box-shadow:0 1px 0 rgba(255,255,255,.06) inset}
+.btn.small{padding:6px 10px;font-size:12.5px}.btn:disabled{opacity:.45;cursor:not-allowed}
+.input{width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.22);color:var(--steel);font-family:var(--mono);font-size:13px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 8px 14px rgba(0,0,0,.28)}
+.input:focus{border-color:rgba(198,161,90,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 3px rgba(198,161,90,.14)}
+select.input{cursor:pointer}
+.hint{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.4}
+.eq{font-family:var(--mono);font-size:12.2px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06);padding:8px 10px;color:var(--steel2);box-shadow:inset 0 10px 16px rgba(0,0,0,.18)}
+.eq em{font-style:normal;color:var(--gold)}
+.eq.hl{border-color:rgba(198,161,90,.42);background:rgba(198,161,90,.10)}
+.pill{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:3px 7px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.06);color:var(--muted)}
+.feedback{border:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.18);padding:10px 11px;font-size:13.4px;line-height:1.55;color:var(--steel2);display:none}
+.feedback.show{display:block}.feedback.good{border-color:rgba(46,168,122,.28);background:rgba(46,168,122,.10)}.feedback.bad{border-color:rgba(224,80,74,.28);background:rgba(224,80,74,.08)}
+.choice{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.16);cursor:pointer;transition:border-color .16s,background .16s}
+.choice:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04)}
+.choice.sel{border-color:rgba(198,161,90,.42);background:rgba(198,161,90,.10)}
+.choice.correct{border-color:rgba(46,168,122,.42);background:rgba(46,168,122,.12)}
+.choice.wrong{border-color:rgba(224,80,74,.42);background:rgba(224,80,74,.10)}
+.choice input{margin-top:3px;accent-color:var(--brass)}
+.q-card{border:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.14);padding:10px}
+.range{accent-color:var(--brass)}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<header class="title"><div class="title-inner"><div class="brand"><div class="mark">ST</div><h1>STRUCT <em>Honors</em></h1><span class="sub">Structural Analysis &bull; Truss Unit</span></div><div class="head-right"><div class="prog" id="progText"><b id="progLabel">-</b><br><span id="progSub">loading</span></div><canvas id="miniCanvas" class="mini" width="260" height="42"></canvas></div></div></header>
+<div class="shell"><nav class="nav"><div class="nav-hd"><b>Stages</b><span id="navPct">0%</span></div><div class="nav-list" id="navList"></div><div class="nav-meta"><span id="navDone">0 / 8</span><button class="btn ghost small" id="resetProg" style="padding:4px 8px;font-size:11px">Reset</button></div></nav><main class="main" id="main"></main></div>
+<script>
+const STAGES=[{id:"s0",n:0,t:"First Principles: Rigidity",d:"Triangle vs quadrilateral"},{id:"s1",n:1,t:"Vectors & Components",d:"Resultants"},{id:"s2",n:2,t:"Equilibrium & FBD",d:"Reactions"},{id:"s3",n:3,t:"Anatomy of a Truss",d:"Parts & idealizations"},{id:"s4",n:4,t:"Method of Joints",d:"Joint-by-joint"},{id:"s5",n:5,t:"Sections & Zero-Force",d:"Cut & moments"},{id:"s6",n:6,t:"Full Truss Challenge",d:"Independent"},{id:"s7",n:7,t:"Quiz Lab",d:"Cumulative"}];
+let done=new Set(JSON.parse(localStorage.getItem("struct_done")||"[]"));
+let checks={}; try{checks=JSON.parse(localStorage.getItem("struct_checks")||"{}")}catch(e){checks={}}
+function saveDone(){localStorage.setItem("struct_done",JSON.stringify([...done]))}
+function saveChecks(){localStorage.setItem("struct_checks",JSON.stringify(checks))}
+function updateProgText(){const pct=Math.round(done.size/8*100);document.getElementById("navPct").textContent=pct+"%";document.getElementById("navDone").textContent=done.size+" / 8";document.getElementById("progLabel").textContent=done.size===8?"Complete":done.size+" / 8 stages";document.getElementById("progSub").textContent=done.size===8?"All stages checked":"Keep going - checks save automatically";drawMini()}
+function renderNav(){const el=document.getElementById("navList");el.innerHTML="";STAGES.forEach(s=>{const a=document.createElement("a");a.href="#"+s.id;a.innerHTML='<span class="num">'+s.n+'</span><span style="flex:1;min-width:0"><span style="display:block;font-size:12.5px;font-weight:700;line-height:1.15">'+s.t+'</span><span style="display:block;font-family:var(--mono);font-size:9.5px;color:var(--muted)">'+s.d+'</span></span><span class="dot '+(done.has(s.n)?"done":"")+'"></span>';if(location.hash==="#"+s.id)a.classList.add("active");a.addEventListener("click",()=>{setTimeout(()=>{document.querySelectorAll(".nav-list a").forEach(x=>x.classList.remove("active"));a.classList.add("active")},30)});el.appendChild(a)})}
+function drawMini(){const c=document.getElementById("miniCanvas");if(!c)return;const g=c.getContext("2d");g.clearRect(0,0,c.width,c.height);g.strokeStyle="rgba(255,255,255,.06)";g.lineWidth=1;for(let x=0;x<c.width;x+=20){g.beginPath();g.moveTo(x,0);g.lineTo(x,c.height);g.stroke()}for(let y=0;y<c.height;y+=14){g.beginPath();g.moveTo(0,y);g.lineTo(c.width,y);g.stroke()}g.fillStyle="rgba(198,161,90,.08)";g.fillRect(0,0,c.width*(done.size/8),c.height);g.fillStyle="rgba(255,255,255,.9)";g.font="9px Cascadia Code, monospace";g.fillText(done.size+"/8  -  "+Math.round(done.size/8*100)+"%",8,14);g.strokeStyle="rgba(238,243,249,.9)";g.lineWidth=1.2;const bx=170,by=26,w=70,h=14;g.beginPath();g.moveTo(bx,by);g.lineTo(bx+w,by);g.lineTo(bx+w/2,by-h);g.closePath();g.stroke();g.beginPath();g.moveTo(bx+w/2,by-h);g.lineTo(bx+w/2,by);g.stroke()}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+function section(n,title,sub,desc,badge){const s=el("section","sheet");s.id="s"+n;s.innerHTML='<div class="sheet-hd"><div style="min-width:0"><div class="eyebrow">Stage '+n+' - '+sub+'</div><h2>'+title+'</h2><p>'+desc+'</p></div><div class="badge">'+badge+'</div></div><div class="body"></div>';return s}
+</script>
+<script>
+function addCheck(bodyEl,stageNum,questions){
+ const wrap=el("div","wb");wrap.innerHTML='<div class="wb-hd"><b>Check - Stage '+stageNum+'</b><span class="tag">'+questions.length+' questions</span></div><div class="wb-bd"></div>';
+ const bd=wrap.querySelector(".wb-bd");
+ const saved=checks["s"+stageNum]||{}; let ans=questions.map((q,i)=>saved[i]!==undefined?saved[i]:null);
+ function render(){
+  bd.innerHTML="";
+  questions.forEach((q,qi)=>{
+   const card=el("div","q-card");card.style.marginTop=qi?"10px":"0";
+   card.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:6px">Q'+(qi+1)+'</div><div style="font-size:13.8px;color:var(--steel);margin-bottom:8px;line-height:1.5">'+q.q+'</div><div class="q-opts"></div><div class="feedback"></div>';
+   const opts=card.querySelector(".q-opts");
+   q.options.forEach((o,oi)=>{
+    const lab=el("label","choice"+(ans[qi]===oi?" sel":""));lab.innerHTML='<input type="radio" name="s'+stageNum+'q'+qi+'" '+(ans[qi]===oi?"checked":"")+'><span style="font-size:13.2px;color:var(--steel2)">'+o+'</span>';
+    lab.querySelector("input").addEventListener("change",()=>{ans[qi]=oi;checks["s"+stageNum]=ans;saveChecks();render()});opts.appendChild(lab);
+   });
+   if(wrap.dataset.checked==="1"){
+    const fb=card.querySelector(".feedback");fb.classList.add("show");
+    if(ans[qi]===null){fb.classList.add("bad");fb.textContent="No answer selected."}
+    else if(ans[qi]===q.correct){fb.classList.add("good");fb.textContent="Correct. "+(q.explain||"")}
+    else{fb.classList.add("bad");fb.textContent="Not quite. "+(q.explain||"")+" Correct: "+q.options[q.correct]}
+    const chs=[...opts.children];chs.forEach((ch,oi)=>{if(oi===q.correct)ch.classList.add("correct");if(ans[qi]===oi&&oi!==q.correct)ch.classList.add("wrong")});
+   }
+   bd.appendChild(card);
+  });
+  const row=el("div","row");row.style.marginTop="12px";
+  row.innerHTML='<button class="btn small">Check</button><button class="btn ghost small">Retake</button><span class="hint"></span>';
+  bd.appendChild(row);
+  const sc=row.querySelector(".hint");
+  if(wrap.dataset.checked==="1"){const score=ans.filter((v,i)=>v===questions[i].correct).length;sc.textContent=score+"/"+questions.length+(score===questions.length?" - Stage complete":"");if(score===questions.length){done.add(stageNum);saveDone();updateProgText();renderNav()}}
+  row.children[0].onclick=()=>{wrap.dataset.checked="1";render()};
+  row.children[1].onclick=()=>{ans=questions.map(()=>null);checks["s"+stageNum]=ans;saveChecks();wrap.dataset.checked="";render();done.delete(stageNum);saveDone();updateProgText();renderNav()};
+ }
+ if(ans.every((v,i)=>v===questions[i].correct)&&ans.every(v=>v!==null)&&ans.length) wrap.dataset.checked="1";
+ render();bodyEl.appendChild(wrap);
+}
+function arrowHead(x1,y1,x2,y2,col){
+ const ang=Math.atan2(y2-y1,x2-x1),L=8,a1=ang+Math.PI-0.42,a2=ang+Math.PI+0.42;
+ const p1x=x2+Math.cos(a1)*L,p1y=y2+Math.sin(a1)*L,p2x=x2+Math.cos(a2)*L,p2y=y2+Math.sin(a2)*L;
+ return '<polygon points="'+x2+','+y2+' '+p1x+','+p1y+' '+p2x+','+p2y+'" fill="'+col+'"/>';
+}
+function lineArrow(x1,y1,x2,y2,col,w,dash,label){
+ let s='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"'+(dash?' stroke-dasharray="5 4"':"")+'/>';s+=arrowHead(x1,y1,x2,y2,col);
+ if(label) s+='<text x="'+((x1+x2)/2+7)+'" y="'+((y1+y2)/2-7)+'" font-family="Cascadia Code,monospace" font-size="9.5" fill="'+col+'">'+label+'</text>';
+ return s;
+}
+</script>
+<script>
+function buildS0(main){
+ const s=section(0,"First Principles","Rigidity Lab","Why a triangle is rigid and a quadrilateral is not. Drag the top joint.","<b>Sheet 0</b><br>Rigidity");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Mental model</span><p><b>Rigid members, pin joints.</b> Members do not stretch. A quadrilateral can shear with no bar stretching. A triangle cannot. A diagonal triangulates the quad.</p><p class="hint">Drag the gold handle left/right. Ghost shows original.</p></div>';
+ const row=el("div","grid2"); b.appendChild(row);
+ const left=el("div","wb"); left.innerHTML='<div class="wb-hd"><b>Rigidity Lab</b><span class="tag" id="rigTag">Quadrilateral</span></div><div class="wb-bd"><svg id="rigSvg" class="svg-frame" viewBox="0 0 520 220" style="height:210px"></svg><div class="row" style="margin-top:10px"><button class="btn ghost small" id="rigReset">Reset</button><span class="hint">Drag gold handle</span></div></div>';
+ const right=el("div"); right.innerHTML='<div class="wb" style="padding:12px"><div class="kicker">Modes</div><div class="row" style="margin:8px 0"><button class="btn small" id="mQuad">Quadrilateral</button><button class="btn ghost small" id="mTri">Triangle</button><button class="btn ghost small" id="mBrace">Braced quad</button></div><div class="eq" id="rigEq" style="margin-top:8px"></div><div class="feedback show" id="rigFb" style="margin-top:8px;display:block"></div></div>';
+ row.appendChild(left); row.appendChild(right); main.appendChild(s);
+ setTimeout(()=>buildS0i(),0);
+ addCheck(b,0,[
+  {q:"Why is an unbraced quadrilateral a mechanism?",options:["It can shear with no bar stretching","Its bars stretch","It has too many members"],correct:0,explain:"Mechanism = shape change without bar extension."},
+  {q:"What does a diagonal do?",options:["Triangulates and removes the mechanism","Makes it heavier only","Creates a mechanism"],correct:0,explain:"Diagonal forms two triangles."},
+  {q:"Why is a triangle rigid?",options:["Any shape change would require a bar to change length","It has more material","Pins are welded"],correct:0,explain:"Triangle has no in-plane mechanism."}
+ ]);
+}
+</script>
+<script>
+function buildS0i(){
+ const svg=document.getElementById("rigSvg"), tag=document.getElementById("rigTag"), eq=document.getElementById("rigEq"), fb=document.getElementById("rigFb");
+ let mode="quad", dx=0, drag=false, sx=0;
+ const B={x0:140,y0:52,x1:380,y1:52,x2:380,y2:168,x3:140,y3:168};
+ function setMode(m){ mode=m; dx=0;
+  document.getElementById("mQuad").className=m==="quad"?"btn small":"btn ghost small";
+  document.getElementById("mTri").className=m==="tri"?"btn small":"btn ghost small";
+  document.getElementById("mBrace").className=m==="brace"?"btn small":"btn ghost small";
+  tag.textContent=m==="quad"?"Quadrilateral":m==="tri"?"Triangle":"Braced quad"; draw();
+ }
+ document.getElementById("mQuad").onclick=()=>setMode("quad");
+ document.getElementById("mTri").onclick=()=>setMode("tri");
+ document.getElementById("mBrace").onclick=()=>setMode("brace");
+ document.getElementById("rigReset").onclick=()=>{dx=0;draw()};
+ function draw(){
+  const eff = mode==="quad"?dx:mode==="tri"?dx*0.08:dx*0.22;
+  const tlx = B.x0+(mode==="tri"?eff*0.3:eff), trx=B.x1+(mode==="tri"?eff*0.3:eff);
+  svg.innerHTML='<rect x="0" y="0" width="520" height="220" fill="#0D223D"/><line x1="0" y1="172" x2="520" y2="172" stroke="rgba(255,255,255,.06)"/>';
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+B.x0+','+B.y0+' '+B.x1+','+B.y1+' '+B.x2+','+B.y2+' '+B.x3+','+B.y3+'" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1" stroke-dasharray="5 4"/>');
+  if(mode==="tri"){
+   const ax=(B.x0+B.x1)/2+eff, ay=36;
+   svg.insertAdjacentHTML("beforeend",'<polygon points="'+ax+','+ay+' '+B.x3+','+B.y3+' '+B.x2+','+B.y2+'" fill="rgba(255,255,255,.04)" stroke="#9FB3C8" stroke-width="2"/>');
+   svg.insertAdjacentHTML("beforeend",'<circle cx="'+ax+'" cy="'+ay+'" r="7" fill="#C6A15A" stroke="#0B1C31" stroke-width="1.2" style="cursor:grab" id="rigHandle"/>');
+  } else {
+   const p0=tlx+","+B.y0, p1=trx+","+B.y1, p2=B.x2+","+B.y2, p3=B.x3+","+B.y3;
+   svg.insertAdjacentHTML("beforeend",'<polygon points="'+p0+' '+p1+' '+p2+' '+p3+'" fill="rgba(255,255,255,.04)" stroke="#9FB3C8" stroke-width="2"/>');
+   if(mode==="brace") svg.insertAdjacentHTML("beforeend",'<line x1="'+tlx+'" y1="'+B.y0+'" x2="'+B.x2+'" y2="'+B.y2+'" stroke="#C6A15A" stroke-width="2" opacity=".9"/>');
+   const hx=trx, hy=B.y0;
+   svg.insertAdjacentHTML("beforeend",'<circle cx="'+hx+'" cy="'+hy+'" r="7" fill="#C6A15A" stroke="#0B1C31" stroke-width="1.5" style="cursor:grab" id="rigHandle"/>');
+  }
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+B.x3+','+(B.y3+6)+' '+(B.x3-10)+','+(B.y3+14)+' '+(B.x3+10)+','+(B.y3+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.12)"/>');
+  svg.insertAdjacentHTML("beforeend",'<circle cx="'+B.x2+'" cy="'+(B.y2+4)+'" r="7" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.2"/><polygon points="'+B.x2+','+(B.y2+9)+' '+(B.x2-10)+','+(B.y2+14)+' '+(B.x2+10)+','+(B.y2+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.12)"/>');
+  if(mode==="quad"){ eq.textContent="Shear dx="+eff.toFixed(1)+" px — mechanism (no bar stretch)."; eq.className="eq"; fb.textContent="Quadrilateral = mechanism."; fb.className="feedback show bad"; }
+  else if(mode==="tri"){ eq.textContent="Triangle dx="+eff.toFixed(1)+" px — rigid (needs bar extension)."; eq.className="eq hl"; fb.textContent="Triangle = rigid."; fb.className="feedback show good"; }
+  else { eq.textContent="Braced quad dx="+eff.toFixed(1)+" px — diagonal gives two triangles."; eq.className="eq hl"; fb.textContent="Diagonal removes mechanism."; fb.className="feedback show good"; }
+  const h=document.getElementById("rigHandle"); if(h){ h.addEventListener("pointerdown",e=>{drag=true; sx=e.clientX-eff; try{h.setPointerCapture(e.pointerId)}catch(_){}}); }
+ }
+ svg.addEventListener("pointermove",e=>{ if(!drag) return; const cur=e.clientX - sx; let lim=42; if(mode==="tri") lim=58; dx=Math.max(-lim,Math.min(lim,cur)); draw(); });
+ svg.addEventListener("pointerup",()=>drag=false); svg.addEventListener("pointerleave",()=>drag=false);
+ draw();
+}
+</script>
+<script>
+function buildS1(main){
+ const s=section(1,"Vectors & Components","Resultant Lab","A vector has magnitude and direction. Fx = F cos(theta), Fy = F sin(theta). Two concurrent vectors balance when their resultant is zero.","<b>Sheet 1</b><br>Vectors");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Idea</span><p><b>Resultant R</b> is the vector sum. Components add: Rx = F1x + F2x, Ry = F1y + F2y. Magnitude |R| = sqrt(Rx^2+Ry^2). The dashed lines are projections onto axes.</p></div>';
+ const row=el("div","grid2s"); b.appendChild(row);
+ const left=el("div","wb"); left.innerHTML='<div class="wb-hd"><b>Vector Lab</b><span class="tag">Interactive</span></div><div class="wb-bd"><svg id="vecSvg" class="svg-frame" viewBox="0 0 520 260" style="height:248px"></svg><div style="display:grid;gap:8px;margin-top:10px"><label class="row" style="justify-content:space-between"><span class="hint">F1</span><input id="f1" type="range" min="10" max="100" value="52" class="range" style="flex:1;margin:0 8px"><span id="f1v" style="font-family:var(--mono);font-size:11px;min-width:44px;text-align:right"></span></label><label class="row" style="justify-content:space-between"><span class="hint">ang1</span><input id="a1" type="range" min="0" max="360" value="34" class="range" style="flex:1;margin:0 8px"><span id="a1v" style="font-family:var(--mono);font-size:11px;min-width:44px;text-align:right"></span></label><label class="row" style="justify-content:space-between"><span class="hint">F2</span><input id="f2" type="range" min="10" max="100" value="38" class="range" style="flex:1;margin:0 8px"><span id="f2v" style="font-family:var(--mono);font-size:11px;min-width:44px;text-align:right"></span></label><label class="row" style="justify-content:space-between"><span class="hint">ang2</span><input id="a2" type="range" min="0" max="360" value="142" class="range" style="flex:1;margin:0 8px"><span id="a2v" style="font-family:var(--mono);font-size:11px;min-width:44px;text-align:right"></span></label></div><div class="row" style="margin-top:10px"><button class="btn ghost small" id="balanceBtn">Suggest balancing F3</button><span class="hint" id="vecHint">Resultant in brass.</span></div><div class="feedback" id="vecFb" style="margin-top:8px"></div></div>';
+ const right=el("div"); right.innerHTML='<div class="wb" style="padding:12px"><div class="kicker">Worked</div><p class="prose" style="font-size:13.6px;margin:6px 0 8px">F1=50 N at 30 deg: Fx=43.3, Fy=25. F2=40 N at 140 deg: Fx=-30.6, Fy=25.7. Rx=12.7, Ry=50.7. |R|=52.3 N at 76 deg.</p><div class="eq" style="font-size:11px">Rx = F1 cos30 + F2 cos140<br>Ry = F1 sin30 + F2 sin140<br>|R| = hypot(Rx,Ry)</div></div>';
+ row.appendChild(left); row.appendChild(right); main.appendChild(s);
+ setTimeout(()=>{
+  const svg=document.getElementById("vecSvg");
+  const f1=document.getElementById("f1"), a1=document.getElementById("a1"), f2=document.getElementById("f2"), a2=document.getElementById("a2");
+  function draw(){
+   const F1=+f1.value, A1=+a1.value*Math.PI/180, F2=+f2.value, A2=+a2.value*Math.PI/180;
+   document.getElementById("f1v").textContent=F1+" N"; document.getElementById("a1v").textContent=a1.value+"\u00B0"; document.getElementById("f2v").textContent=F2+" N"; document.getElementById("a2v").textContent=a2.value+"\u00B0";
+   const cx=260, cy=148; const x1=cx+Math.cos(A1)*F1*1.55, y1=cy-Math.sin(A1)*F1*1.55; const x2=cx+Math.cos(A2)*F2*1.55, y2=cy-Math.sin(A2)*F2*1.55;
+   const rx=F1*Math.cos(A1)+F2*Math.cos(A2), ry=F1*Math.sin(A1)+F2*Math.sin(A2); const R=Math.hypot(rx,ry);
+   const rxp=cx+rx*1.55, ryp=cy-ry*1.55;
+   svg.innerHTML='<rect x="0" y="0" width="520" height="260" fill="#0D223D"/><line x1="0" y1="'+cy+'" x2="520" y2="'+cy+'" stroke="rgba(255,255,255,.08)"/><line x1="'+cx+'" y1="0" x2="'+cx+'" y2="260" stroke="rgba(255,255,255,.08)"/>';
+   svg.insertAdjacentHTML("beforeend", lineArrow(cx,cy,x1,y1,"#8EA0B8",2.1,false,F1+" N"));
+   svg.insertAdjacentHTML("beforeend", lineArrow(cx,cy,x2,y2,"#9FB3C8",2.1,false,F2+" N"));
+   svg.insertAdjacentHTML("beforeend", lineArrow(cx,cy,rxp,ryp,"#C6A15A",2.4,false,"R "+Math.round(R)+" N"));
+   svg.insertAdjacentHTML("beforeend",'<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#EEF3F9" stroke="#0B1C31"/>');
+   svg.insertAdjacentHTML("beforeend",'<text x="12" y="18" font-family="Cascadia Code,monospace" font-size="10" fill="#7E94B0">Fx: '+rx.toFixed(1)+'  Fy: '+ry.toFixed(1)+'  |R|='+R.toFixed(1)+'</text>');
+  }
+  [f1,a1,f2,a2].forEach(e=> e.addEventListener("input", draw));
+  document.getElementById("balanceBtn").onclick=()=>{
+   const rx=+f1.value*Math.cos(+a1.value*Math.PI/180)+ +f2.value*Math.cos(+a2.value*Math.PI/180);
+   const ry=+f1.value*Math.sin(+a1.value*Math.PI/180)+ +f2.value*Math.sin(+a2.value*Math.PI/180);
+   const mag=Math.hypot(rx,ry); const ang=(Math.atan2(-ry,-rx)*180/Math.PI+360)%360;
+   const fb=document.getElementById("vecFb"); fb.classList.add("show"); fb.classList.remove("bad"); fb.classList.add("good");
+   fb.textContent= mag<4 ? 'Nearly balanced (R~0). F3 ~ '+mag.toFixed(1)+' N at ~'+Math.round(ang)+'\u00B0.' : 'To balance, add F3 ~ '+mag.toFixed(1)+' N at '+Math.round(ang)+'\u00B0 (opposite R).';
+  };
+  draw();
+ },0);
+ addCheck(b,1,[
+  {q:"Fx for F=60 N at 60 deg?",options:["30 N","52 N","60 N"],correct:0,explain:"Fx=F cos60=30."},
+  {q:"Equilibrium of concurrent forces requires:",options:["R=0 (Rx=0,Ry=0)","Largest F zero","Moment zero only"],correct:0,explain:"Vector sum zero."},
+  {q:"Ry for F=50 N at 30 deg?",options:["25 N","43 N","50 N"],correct:0,explain:"Ry=F sin30=25."}
+ ]);
+}
+</script>
+<script>
+function buildS2(main){
+ const s=section(2,"Equilibrium & FBD","Reactions","A free body diagram isolates the body. Equilibrium: Fx=0, Fy=0, M=0.","<b>Sheet 2</b><br>Equilibrium");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Procedure</span><p><b>1</b> Isolate. <b>2</b> Show loads, reactions, dims. <b>3</b> Write equilibrium. Pin = Ax,Ay; roller = By vertical.</p><div class="eq" style="font-size:11.5px">&#9312; Fx=0 &nbsp; &#9312; Fy=0 &nbsp; &#9312; M=0</div></div>';
+ const row=el("div","grid2s"); b.appendChild(row);
+ const left=el("div","wb"); left.innerHTML='<div class="wb-hd"><b>Beam Reaction Lab</b><span class="tag">Scaffolded</span></div><div class="wb-bd"><svg id="fbdSvg" class="svg-frame" viewBox="0 0 520 200" style="height:186px"></svg><div class="eq" id="fbdEq" style="margin-top:10px;font-size:11.5px"></div><div class="grid2" style="margin-top:10px"><label class="hint">P (kN)<br><input id="fbdP" class="input" type="number" value="20" min="5" max="100" step="5"></label><label class="hint">x = frac * L<br><select id="fbdFrac" class="input"><option value="0.25">0.25 L</option><option value="0.5" selected>0.50 L</option><option value="0.75">0.75 L</option></select></label></div><div class="row" style="margin-top:10px"><button class="btn small" id="fbdSolve">Show solution</button><button class="btn ghost small" id="fbdHide">Hide</button><span class="hint">Equations in sync with diagram.</span></div><div class="feedback" id="fbdFb" style="margin-top:8px"></div></div>';
+ const right=el("div"); right.innerHTML='<div class="wb" style="padding:12px"><div class="kicker">Worked example</div><p class="prose" style="font-size:13.6px;margin:6px 0 8px">Simply supported beam L=8 m, P=20 kN at midspan. Pin at A, roller at B.</p><div class="eq" style="font-size:11px">&#9312; Fy=0: Ay+By-P=0<br>&#9312; M_A=0: By*8 - P*4=0 => By=10 kN<br>Ay = 10 kN.</div></div>';
+ row.appendChild(left); row.appendChild(right); main.appendChild(s);
+ setTimeout(()=>buildS2i(),0);
+ addCheck(b,2,[
+  {q:"Pin support provides:",options:["Ax and Ay","Only Ay","Only moment"],correct:0,explain:"Pin has two reactions."},
+  {q:"Beam L=10 m, P=30 kN at 0.25L from A. By?",options:["7.5 kN","22.5 kN","15 kN"],correct:0,explain:"By=P*0.25."},
+  {q:"Sum of vertical reactions equals:",options:["P","Zero","2P"],correct:0,explain:"Ay+By=P."}
+ ]);
+}
+</script>
+<script>
+function buildS2i(){
+ const svg=document.getElementById("fbdSvg");
+ const pEl=document.getElementById("fbdP"), fEl=document.getElementById("fbdFrac");
+ const eq=document.getElementById("fbdEq"), fb=document.getElementById("fbdFb");
+ let show=false;
+ function draw(){
+  const P=+pEl.value||20, frac=+fEl.value;
+  const By=P*frac, Ay=P-By;
+  const y0=112, xA=78, xB=442, Lpx=xB-xA, xP=xA+Lpx*frac;
+  svg.innerHTML='<rect x="0" y="0" width="520" height="200" fill="#0D223D"/><line x1="0" y1="'+(y0+14)+'" x2="520" y1="'+(y0+14)+'" stroke="rgba(255,255,255,.06)"/>';
+  svg.insertAdjacentHTML("beforeend",'<line x1="'+xA+'" y1="'+y0+'" x2="'+xB+'" y2="'+y0+'" stroke="#EEF3F9" stroke-width="5" stroke-linecap="round"/>');
+  svg.insertAdjacentHTML("beforeend",'<line x1="'+xA+'" y1="'+(y0+18)+'" x2="'+xB+'" y2="'+(y0+18)+'" stroke="rgba(198,161,90,.45)" stroke-width="1"/><line x1="'+xA+'" y1="'+(y0+14)+'" x2="'+xA+'" y2="'+(y0+22)+'" stroke="rgba(198,161,90,.45)"/><line x1="'+xB+'" y1="'+(y0+14)+'" x2="'+xB+'" y2="'+(y0+22)+'" stroke="rgba(198,161,90,.45)"/><text x="'+((xA+xB)/2)+'" y="'+(y0+30)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#C6A15A">L=8 m</text>');
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+xA+','+(y0+6)+' '+(xA-10)+','+(y0+14)+' '+(xA+10)+','+(y0+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)"/><circle cx="'+xA+'" cy="'+y0+'" r="4" fill="#EEF3F9" stroke="#0B1C31"/>');
+  svg.insertAdjacentHTML("beforeend",'<circle cx="'+xB+'" cy="'+(y0+4)+'" r="7" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.2"/><polygon points="'+xB+','+(y0+9)+' '+(xB-10)+','+(y0+14)+' '+(xB+10)+','+(y0+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)"/>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(xP, y0-42, xP, y0-2, "#E07A3A", 2.2, false, ""));
+  svg.insertAdjacentHTML("beforeend",'<text x="'+xP+'" y="'+(y0-46)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="10" fill="#E07A3A">P='+P+' kN</text>');
+  svg.insertAdjacentHTML("beforeend",'<text x="'+xA+'" y="'+(y0+48)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="10" fill="#EEF3F9">A (pin)</text><text x="'+xB+'" y="'+(y0+48)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="10" fill="#EEF3F9">B (roller)</text>');
+  if(show){
+   svg.insertAdjacentHTML("beforeend", lineArrow(xA, y0+2, xA, y0-32, "#4F8FD6", 2.2, false, ""));
+   svg.insertAdjacentHTML("beforeend", lineArrow(xB, y0+2, xB, y0-32, "#4F8FD6", 2.2, false, ""));
+   svg.insertAdjacentHTML("beforeend",'<text x="'+xA+'" y="'+(y0-36)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#4F8FD6">Ay='+Ay.toFixed(1)+'</text>');
+   svg.insertAdjacentHTML("beforeend",'<text x="'+xB+'" y="'+(y0-36)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#4F8FD6">By='+By.toFixed(1)+'</text>');
+   eq.innerHTML='&#9312; M_A=0: By*8 - P*'+(frac*8).toFixed(1)+' =0 => By='+(P*frac).toFixed(1)+' &nbsp;|&nbsp; Ay='+Ay.toFixed(1)+' <em style="color:var(--ok)">Check Fy OK</em>';
+   eq.classList.add("hl"); fb.className="feedback show good"; fb.textContent='Reactions follow moment equilibrium about A.';
+  } else {
+   eq.innerHTML='&#9312; M_A=0: By*8 - P*'+(frac*8).toFixed(1)+' =0 &nbsp;|&nbsp; Ay=P-By &nbsp; <span class="pill">Press Show solution</span>';
+   eq.classList.remove("hl"); fb.className="feedback"; fb.textContent="";
+  }
+ }
+ pEl.addEventListener("input", draw); fEl.addEventListener("change", draw);
+ document.getElementById("fbdSolve").onclick=()=>{ show=true; draw(); };
+ document.getElementById("fbdHide").onclick=()=>{ show=false; draw(); };
+ draw();
+}
+</script>
+<script>
+function buildS3(main){
+ const s=section(3,"Anatomy of a Truss","Idealizations","A truss is a triangulated assembly of two-force members connected at pins. Loads are modeled at joints for these problems.","<b>Sheet 3</b><br>Anatomy");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Parts</span><p><b>Chord</b> = top/bottom. <b>Verticals &amp; diagonals</b> = interior. <b>Panel</b> = bay between joints. Idealization: straight two-force members, frictionless pins, loads at joints, weightless (or lumped).</p><div class="eq" style="font-size:11px">Two-force member: forces equal, opposite, collinear with member axis.</div></div>';
+ const wb=el("div","wb"); wb.innerHTML='<div class="wb-hd"><b>Hover to identify</b><span class="tag">Diagram</span></div><div class="wb-bd"><svg id="anatSvg" class="svg-frame" viewBox="0 0 520 180" style="height:170px"></svg><div class="hint" id="anatHint" style="margin-top:8px">Hover members and joints.</div></div>';
+ b.appendChild(wb); main.appendChild(s);
+ setTimeout(()=>{
+  const svg=document.getElementById("anatSvg");
+  const pts=[ [60,120],[170,120],[280,120],[390,120],[225,48] ];
+  const members=[[0,1],[1,2],[2,3],[0,4],[1,4],[2,4],[3,4]];
+  const names=["Bottom chord","Bottom chord","Bottom chord","Top chord (diag)","Vertical","Diagonal","Top chord (diag)"];
+  function draw(hi){
+   svg.innerHTML='<rect x="0" y="0" width="520" height="180" fill="#0D223D"/>';
+   members.forEach((m,i)=>{
+    const a=pts[m[0]], b2=pts[m[1]];
+    const col=hi===i?"#C6A15A":"#9FB3C8";
+    const w=hi===i?3:1.7;
+    svg.insertAdjacentHTML("beforeend",'<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b2[0]+'" y2="'+b2[1]+'" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round" data-mi="'+i+'" style="cursor:pointer"/>');
+   });
+   pts.forEach((p,i)=>{
+    svg.insertAdjacentHTML("beforeend",'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#EEF3F9" stroke="#0B1C31" stroke-width="1.2"/>');
+    svg.insertAdjacentHTML("beforeend",'<text x="'+p[0]+'" y="'+(p[1]+22)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="8" fill="#7E94B0">'+["A","B","C","D","E"][i]+'</text>');
+   });
+  }
+  draw(-1);
+  svg.addEventListener("mousemove",e=>{
+   const rect=svg.getBoundingClientRect();
+   const x=((e.clientX-rect.left)/rect.width)*520, y=((e.clientY-rect.top)/rect.height)*180;
+   let best=-1, bd=14;
+   members.forEach((m,i)=>{
+    const a=pts[m[0]], b2=pts[m[1]];
+    const len=Math.hypot(b2[0]-a[0], b2[1]-a[1]);
+    const t=Math.max(0,Math.min(1, ((x-a[0])*(b2[0]-a[0])+(y-a[1])*(b2[1]-a[1]))/(len*len)));
+    const px=a[0]+t*(b2[0]-a[0]), py=a[1]+t*(b2[1]-a[1]);
+    const d=Math.hypot(x-px,y-py);
+    if(d<bd){ bd=d; best=i; }
+   });
+   draw(best);
+   document.getElementById("anatHint").textContent=best>=0?names[best]+" ("+["A-B","B-C","C-D","A-E","B-E","C-E","D-E"][best]+")":"Hover members and joints.";
+  });
+  svg.addEventListener("mouseleave",()=>{ draw(-1); document.getElementById("anatHint").textContent="Hover members and joints."; });
+ },0);
+ addCheck(b,3,[
+  {q:"Two-force member means:",options:["Forces equal, opposite, collinear with member","Forces are zero","Moment at midspan"],correct:0,explain:"Two-force idealization."},
+  {q:"For these problems, loads are modeled:",options:["At joints","At midspan of members","Only at supports"],correct:0,explain:"Joint-load assumption for truss analysis here."},
+  {q:"Triangulation provides:",options:["Rigidity with minimal members","Extra weight only","A mechanism"],correct:0,explain:"Triangulation gives rigidity."}
+ ]);
+}
+</script>
+<script>
+function buildS4(main){
+ const s=section(4,"Method of Joints","Solve","Isolate a joint, show assumed tension arrows away from joint, write Fx=0,Fy=0. Start where unknowns <=2.","<b>Sheet 4</b><br>Solve");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Tension sign</span><p>Assume <b>tension</b>: arrows <em>away</em> from joint. If result is negative, the member is actually in compression (pushing the joint).</p><div class="eq" style="font-size:11px">&#9312; Fx=0 &nbsp; &#9312; Fy=0 &nbsp; <em>Fy uses sin, Fx uses cos</em></div></div>';
+ const row=el("div","grid2s"); b.appendChild(row);
+ const left=el("div","wb"); left.innerHTML='<div class="wb-hd"><b>Joint Workbench</b><span class="tag">Scaffolded</span></div><div class="wb-bd"><svg id="jointSvg" class="svg-frame" viewBox="0 0 520 220" style="height:200px"></svg><div id="jointPanel" style="margin-top:10px;border:1px solid rgba(255,255,255,.06);padding:10px;background:rgba(0,0,0,.14)"></div><div class="feedback" id="jointFb"></div><div class="row" style="margin-top:8px"><button class="btn ghost small" id="jointReset">Reset</button><span class="hint">Colors after Check.</span></div></div>';
+ const right=el("div"); right.innerHTML='<div class="wb" style="padding:12px"><div class="kicker">Worked: Joint A</div><p class="prose" style="font-size:13.6px;margin:6px 0 8px">Truss: span 6 m, height 3.6 m, load 30 kN at D. Reactions: Ay=15, Dy=15 (sym). At A, diagonal AB length 5 m (3-4-5).<br>&#9312; Fy=0: Ay + F_AB*(3.6/5)=0 => F_AB = -20.8? Wait recompute: 4.5? See workbench.</p><div class="eq" id="jointEq" style="font-size:11px">Select a joint in the workbench.</div></div>';
+ row.appendChild(left); row.appendChild(right); main.appendChild(s);
+ setTimeout(()=>buildS4i(),0);
+ addCheck(b,4,[
+  {q:"Start joint has:",options:["2 or fewer unknowns","Most members","Any"],correct:0,explain:"Start where solvable."},
+  {q:"Tension arrow at isolated joint points:",options:["Away from joint","Toward joint","Down always"],correct:0,explain:"Tension pulls joint."},
+  {q:"Negative result means:",options:["Compression","More tension","Zero"],correct:0,explain:"Sign gives T/C."}
+ ]);
+}
+</script>
+<script>
+function buildS4i(){
+ const svg=document.getElementById("jointSvg"),panel=document.getElementById("jointPanel"),fb=document.getElementById("jointFb"),eq=document.getElementById("jointEq");
+ let cur="A",solv={};
+ const N={A:{x:80,y:160},B:{x:250,y:160},D:{x:420,y:160},E:{x:250,y:42}};
+ const Ms=[{id:"AB",a:"A",b:"B"},{id:"BD",a:"B",b:"D"},{id:"AE",a:"A",b:"E"},{id:"DE",a:"D",b:"E"},{id:"BE",a:"B",b:"E"}];
+ const P=30,Ay=15,Dy=15,L=Math.hypot(N.E.x-N.A.x,-(N.E.y-N.A.y)),ux=(N.E.x-N.A.x)/L,uy=(-(N.E.y-N.A.y))/L;
+ const S={AE:-Ay/uy,DE:-Dy/uy};S.AB=-S.AE*ux;S.BD=-S.DE*ux;S.BE=P;const TC=v=>v>0?"T":v<0?"C":"0";
+ function draw(){
+  svg.innerHTML='<rect x="0" y="0" width="520" height="220" fill="#0D223D"/>';
+  Ms.forEach(m=>{
+   let a=N[m.a],b=N[m.b],f=S[m.id],c="#9FB3C8",w=2.4;
+   if(solv[m.id]){c=f<0?"#4F8FD6":"#E07A3A";w=3.4}else if(cur===m.a||cur===m.b){c="rgba(198,161,90,.95)";w=2.8}
+   let op=(cur&&cur!==m.a&&cur!==m.b)?0.28:1;
+   svg.insertAdjacentHTML("beforeend",'<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+c+'" stroke-width="'+w+'" opacity="'+op+'"/>');
+   let mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+   if(solv[m.id])svg.insertAdjacentHTML("beforeend",'<text x="'+mx+'" y="'+(my-6)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="8.5" fill="'+c+'" font-weight="700">'+m.id+' '+Math.abs(f).toFixed(1)+' '+TC(f)+'</text>');
+   else svg.insertAdjacentHTML("beforeend",'<text x="'+mx+'" y="'+(my-6)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="8" fill="#7E94B0">'+m.id+'</text>');
+  });
+  for(let k in N){let p=N[k],is=k===cur;svg.insertAdjacentHTML("beforeend",'<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(is?8:5.5)+'" fill="'+(is?"#C6A15A":"#EEF3F9")+'" stroke="#0B1C31" stroke-width="1.2" style="cursor:pointer"/><text x="'+p.x+'" y="'+(p.y+24)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="'+(is?"#C6A15A":"#EEF3F9")+'">'+k+'</text>')}
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+N.A.x+','+(N.A.y+6)+' '+(N.A.x-10)+','+(N.A.y+14)+' '+(N.A.x+10)+','+(N.A.y+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.12)"/>');
+  svg.insertAdjacentHTML("beforeend",'<circle cx="'+N.D.x+'" cy="'+(N.D.y+4)+'" r="7" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.2"/>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.B.x,112,N.B.x,158,"#E07A3A",2.2,false,""));
+  svg.insertAdjacentHTML("beforeend",'<text x="'+N.B.x+'" y="104" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#E07A3A">P=30 kN</text>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.A.x,N.A.y+2,N.A.x,N.A.y-30,"#4F8FD6",1.8,false,""));
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.D.x,N.D.y+2,N.D.x,N.D.y-30,"#4F8FD6",1.8,false,""));
+ }
+ function render(){
+  let h='<div class="kicker">Joint '+cur+'</div><div style="margin:6px 0 8px"><svg viewBox="0 0 160 92" style="width:100%;height:92px;border:1px solid rgba(255,255,255,.06);background:#0D223D"><rect x="0" y="0" width="160" height="92" fill="#0D223D"/><circle cx="80" cy="46" r="4" fill="#EEF3F9"/>';
+  let ms=[];if(cur==="A")ms=[{ux:1,uy:0,id:"AB"},{ux:ux,uy:-uy,id:"AE"}];else if(cur==="D")ms=[{ux:-1,uy:0,id:"BD"},{ux:-ux,uy:-uy,id:"DE"}];else if(cur==="B")ms=[{ux:-1,uy:0,id:"AB"},{ux:1,uy:0,id:"BD"},{ux:0,uy:-1,id:"BE"}];else ms=[{ux:-ux,uy:uy,id:"AE"},{ux:ux,uy:uy,id:"DE"},{ux:0,uy:1,id:"BE"}];
+  ms.forEach(m=>{let x2=80+m.ux*38,y2=46+m.uy*38;h+='<line x1="80" y1="46" x2="'+x2+'" y2="'+y2+'" stroke="#C6A15A" stroke-width="1.6" stroke-dasharray="4 3"/><text x="'+(80+m.ux*24+(m.ux===0?8:0))+'" y="'+(46+m.uy*24-6)+'" font-size="7" fill="#C6A15A" font-family="Cascadia Code,monospace">'+m.id+'</text>';});
+  h+='</svg><div class="hint" style="margin-top:4px">Tension away (dashed).</div></div>';
+  if(cur==="A")h+='<div class="eq">Fy: Ay + F_AE*sin=0<br>Fx: F_AB + F_AE*cos=0</div>';else if(cur==="B")h+='<div class="eq">Fy: F_BE - P=0<br>Fx: -F_AB+F_BD=0</div>';else h+='<div class="eq">Select A or B.</div>';
+  let ids=cur==="A"?["AB","AE"]:cur==="B"?["BE"]:cur==="D"?["BD","DE"]:[];
+  ids.forEach(id=>{h+='<div class="hint" style="margin-top:8px">'+id+' (+T/-C)<br><input class="input" id="inp_'+id+'" type="number" step="0.1" placeholder="'+S[id].toFixed(1)+'"> '+S[id].toFixed(1)+' '+TC(S[id])+'</div>'});
+  h+='<div class="row" style="margin-top:10px"><button class="btn small" id="checkJoint">Check</button><button class="btn ghost small" id="showJoint">Show</button></div>';panel.innerHTML=h;
+  eq.innerHTML=cur==="A"?'F_AE='+S.AE.toFixed(1)+' '+TC(S.AE)+' F_AB='+S.AB.toFixed(1)+' '+TC(S.AB):cur==="B"?'F_BE='+S.BE.toFixed(1)+' T':'Pick A or B.';if(cur==="A")eq.classList.add("hl");else eq.classList.remove("hl");
+  let b=document.getElementById("checkJoint");if(b)b.onclick=()=>{
+   let ok=true,msg=[];ids.forEach(id=>{let v=parseFloat(document.getElementById("inp_"+id).value);if(isNaN(v)){ok=false;msg.push(id+": num");return}if(Math.abs(v-S[id])>0.7){ok=false;msg.push(id+": exp "+S[id].toFixed(1)+" "+TC(S[id]))}else solv[id]=true});
+   if(ok&&ids.length){fb.className="feedback show good";fb.textContent="Correct "+ids.map(id=>id+" "+Math.abs(S[id]).toFixed(1)+" "+TC(S[id])).join(", ");draw();}else{fb.className="feedback show bad";fb.textContent=msg.join(" | ")||"Check sign."}
+  };
+  let sh=document.getElementById("showJoint");if(sh)sh.onclick=()=>ids.forEach(id=>{let e=document.getElementById("inp_"+id);if(e)e.value=S[id].toFixed(1)});
+ }
+ svg.addEventListener("click",e=>{
+  let r=svg.getBoundingClientRect(),x=((e.clientX-r.left)/r.width)*520,y=((e.clientY-r.top)/r.height)*220,b=null,d=18;for(let k in N){let p=N[k],dd=Math.hypot(x-p.x,y-p.y);if(dd<d){d=dd;b=k}}if(b){cur=b;fb.className="feedback";fb.textContent="";draw();render();}
+ });
+ document.getElementById("jointReset").onclick=()=>{solv={};fb.className="feedback";fb.textContent="";cur="A";draw();render();};
+ draw();render();
+}
+</script>
+<script>
+function buildS5(main){
+ const s=section(5,"Sections & Zero-Force","Efficient cuts","Cut through members, draw the free body of one side, use moment equilibrium to eliminate unknowns.","<b>Sheet 5</b><br>Sections");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Tactic</span><p>Pick a moment center where two unknowns intersect — their moment drops out, leaving one equation for the third.</p><div class="eq" style="font-size:11px">Zero-force rules: (1) Two non-collinear at unloaded joint => both zero. (2) Three members, two collinear, no load => non-collinear zero.</div></div>';
+ const wb=el("div","wb"); wb.innerHTML='<div class="wb-hd"><b>Section Cut Lab</b><span class="tag">Scaffolded</span></div><div class="wb-bd"><svg id="sectSvg" class="svg-frame" viewBox="0 0 520 200" style="height:190px"></svg><div class="row" style="margin-top:8px;gap:8px"><button class="btn small" id="cutBtn">Show cut</button><button class="btn ghost small" id="uncutBtn">Hide</button><span class="hint" id="sectHint">Cut through AB • AE • BE.</span></div><div class="eq" id="sectEq" style="margin-top:10px;font-size:11px"></div><div class="feedback" id="sectFb" style="margin-top:8px"></div><div style="margin-top:10px" class="grid2"><label class="hint">F_AB (kN +T/-C)<br><input id="sectAB" class="input" type="number" step="0.1"></label><label class="hint">F_BE (kN)<br><input id="sectBE" class="input" type="number" step="0.1"></label></div><div class="row" style="margin-top:8px"><button class="btn small" id="sectCheck">Check</button><button class="btn ghost small" id="sectShow">Show</button></div></div>';
+ b.appendChild(wb); main.appendChild(s);
+ setTimeout(()=>buildS5i(),0);
+ addCheck(b,5,[
+  {q:"Section method cuts members and:",options:["Uses equilibrium on one side","Requires joints only","Needs all joints"],correct:0,explain:"One side FBD."},
+  {q:"Moment center chosen to:",options:["Eliminate two unknowns","Maximize numbers","Avoid loads"],correct:0,explain:"Intersect two unknowns."},
+  {q:"Zero-force case: two non-collinear at unloaded joint:",options:["Both zero","Both tension","One zero"],correct:0,explain:"Fy and Fx give zero."}
+ ]);
+}
+</script>
+<script>
+function buildS5i(){
+ const svg=document.getElementById("sectSvg"),hint=document.getElementById("sectHint"),eq=document.getElementById("sectEq"),fb=document.getElementById("sectFb");
+ let cut=false;
+ // same truss as S4 for consistency
+ const N={A:{x:86,y:142},B:{x:250,y:142},D:{x:414,y:142},E:{x:250,y:40}};
+ const P=30,Ay=15,L=Math.hypot(N.E.x-N.A.x,-(N.E.y-N.A.y)),ux=(N.E.x-N.A.x)/L,uy=(-(N.E.y-N.A.y))/L;
+ const S={AE:-Ay/uy};S.AB=-S.AE*ux;S.BE=P;
+ function draw(){
+  svg.innerHTML='<rect x="0" y="0" width="520" height="200" fill="#0D223D"/><line x1="0" y1="142" x2="520" y2="142" stroke="rgba(255,255,255,.06)"/>';
+  let Ms=[["A","B"],["B","D"],["A","E"],["D","E"],["B","E"]];
+  Ms.forEach(p=>{
+   let a=N[p[0]],b=N[p[1]];
+   let isCut=( (p[0]==="A"&&p[1]==="B")||(p[0]==="A"&&p[1]==="E")||(p[0]==="B"&&p[1]==="E") );
+   let col="#9FB3C8",w=2.2;
+   if(isCut&&cut){ col="#C6A15A"; w=3; }
+   svg.insertAdjacentHTML("beforeend",'<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"/>');
+  });
+  for(let k in N){ let p=N[k]; svg.insertAdjacentHTML("beforeend",'<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#EEF3F9" stroke="#0B1C31" stroke-width="1.1"/><text x="'+p.x+'" y="'+(p.y+18)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="8" fill="#7E94B0">'+k+'</text>');}
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+N.A.x+','+(N.A.y+6)+' '+(N.A.x-10)+','+(N.A.y+14)+' '+(N.A.x+10)+','+(N.A.y+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.12)"/>');
+  svg.insertAdjacentHTML("beforeend",'<circle cx="'+N.D.x+'" cy="'+(N.D.y+4)+'" r="7" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.1"/>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.B.x, 98, N.B.x, 140, "#E07A3A", 2, false, ""));
+  svg.insertAdjacentHTML("beforeend",'<text x="'+N.B.x+'" y="90" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#E07A3A">P=30</text>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.A.x, N.A.y+2, N.A.x, N.A.y-28, "#4F8FD6", 1.8, false, ""));
+  if(cut){
+   svg.insertAdjacentHTML("beforeend",'<line x1="168" y1="18" x2="168" y2="162" stroke="#E07A3A" stroke-width="1.4" stroke-dasharray="6 5" opacity=".9"/>');
+   svg.insertAdjacentHTML("beforeend",'<text x="172" y="28" font-family="Cascadia Code,monospace" font-size="9" fill="#E07A3A">cut</text>');
+   // moment center E for AB
+   svg.insertAdjacentHTML("beforeend",'<circle cx="'+N.E.x+'" cy="'+N.E.y+'" r="9" fill="none" stroke="rgba(198,161,90,.9)" stroke-width="1.2" stroke-dasharray="3 3"/>');
+   svg.insertAdjacentHTML("beforeend",'<text x="'+N.E.x+'" y="'+(N.E.y-12)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="7" fill="#C6A15A">M_E</text>');
+  }
+  if(cut){ eq.innerHTML='Left FBD: &sum;M_E=0 => Ay*168 - P*0? Wait: take moments about E to solve AB. Use geometry: moment arm = vertical 102 px.<br><b>F_AB='+S.AB.toFixed(1)+' kN ('+(S.AB>0?"T":"C")+')</b>  •  <b>F_BE='+S.BE.toFixed(1)+' kN T</b> (vertical equilibrium)'; eq.classList.add("hl"); hint.textContent="Cut reveals internal forces. Moment about E eliminates AE and BE."; }
+  else { eq.innerHTML='Press Show cut. Then &sum;M_E=0 gives F_AB directly.'; eq.classList.remove("hl"); hint.textContent="Cut through AB, AE, BE."; }
+ }
+ document.getElementById("cutBtn").onclick=()=>{cut=true;draw()};
+ document.getElementById("uncutBtn").onclick=()=>{cut=false;draw()};
+ document.getElementById("sectCheck").onclick=()=>{
+  let vAB=parseFloat(document.getElementById("sectAB").value), vBE=parseFloat(document.getElementById("sectBE").value);
+  let ok=true,msg=[];
+  if(isNaN(vAB)||Math.abs(vAB-S.AB)>0.8){ ok=false; msg.push("F_AB expected "+S.AB.toFixed(1));}
+  if(isNaN(vBE)||Math.abs(vBE-S.BE)>0.8){ ok=false; msg.push("F_BE expected "+S.BE.toFixed(1));}
+  if(ok){ fb.className="feedback show good"; fb.textContent="Correct. F_AB "+S.AB.toFixed(1)+" "+(S.AB>0?"T":"C")+" , F_BE "+S.BE.toFixed(1)+" T."; } else { fb.className="feedback show bad"; fb.textContent=msg.join(" | "); }
+ };
+ document.getElementById("sectShow").onclick=()=>{ document.getElementById("sectAB").value=S.AB.toFixed(1); document.getElementById("sectBE").value=S.BE.toFixed(1); };
+ draw();
+}
+</script>
+<script>
+function buildS6(main){
+ const s=section(6,"Full Truss Challenge","Independent","Solve the truss end-to-end. No hints until Check. Use signed values: +Tension, -Compression.","<b>Sheet 6</b><br>Challenge");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">Your truss</span><p>Span 6 m, height 2.36 m (gives 3-4-5? Actually half-span 3 m, height 2.36 not exact — workbench uses exact geometry from diagram). Load P=30 kN at B (center bottom). Pin at A, roller at D. Solve reactions, then all members.</p><div class="eq" style="font-size:11px">Enter signed forces (kN): positive = Tension, negative = Compression. Tolerance 0.8 kN.</div></div>';
+ const wb=el("div","wb"); wb.innerHTML='<div class="wb-hd"><b>Independent Solve</b><span class="tag">No scaffold</span></div><div class="wb-bd"><svg id="chSvg" class="svg-frame" viewBox="0 0 520 220" style="height:208px"></svg><div class="grid2" style="margin-top:10px"><label class="hint">Ay (kN)<br><input id="chAy" class="input" type="number" step="0.1"></label><label class="hint">Dy (kN)<br><input id="chDy" class="input" type="number" step="0.1"></label><label class="hint">AB<br><input id="chAB" class="input" type="number" step="0.1"></label><label class="hint">BD<br><input id="chBD" class="input" type="number" step="0.1"></label><label class="hint">AE<br><input id="chAE" class="input" type="number" step="0.1"></label><label class="hint">DE<br><input id="chDE" class="input" type="number" step="0.1"></label><label class="hint">BE<br><input id="chBE" class="input" type="number" step="0.1"></label><label class="hint" style="align-self:center">Tip: start at a joint with 2 unknowns.</label></div><div class="row" style="margin-top:10px"><button class="btn small" id="chCheck">Check all</button><button class="btn ghost small" id="chShow">Show solution</button><button class="btn ghost small" id="chReset">Reset</button></div><div class="feedback" id="chFb" style="margin-top:8px"></div><div class="eq" id="chEq" style="margin-top:8px;font-size:11px"></div></div>';
+ b.appendChild(wb); main.appendChild(s);
+ setTimeout(()=>buildS6i(),0);
+ addCheck(b,6,[
+  {q:"Best first step for full truss:",options:["Compute reactions then a joint with 2 unknowns","Solve random member first","Cut everywhere"],correct:0,explain:"Reactions first, then joint with <=2 unknowns."},
+  {q:"Sign convention here:",options:["+T / -C (entered as signed value)","Always positive","T is negative"],correct:0,explain:"Signed magnitude carries T/C."},
+  {q:"If a member is zero-force:",options:["It carries no load but may be needed for stability","It must be removed","It is in large tension"],correct:0,explain:"Zero-force members still matter for construction."}
+ ]);
+}
+</script>
+<script>
+function buildS6i(){
+ const svg=document.getElementById("chSvg"),fb=document.getElementById("chFb"),eq=document.getElementById("chEq");
+ const N={A:{x:86,y:152},B:{x:250,y:152},D:{x:414,y:152},E:{x:250,y:42}};
+ const P=30,Ay=15,Dy=15,L=Math.hypot(N.E.x-N.A.x,-(N.E.y-N.A.y)),ux=(N.E.x-N.A.x)/L,uy=(-(N.E.y-N.A.y))/L;
+ const S={Ay:15,Dy:15,AE:-Ay/uy,DE:-Dy/uy};S.AB=-S.AE*ux;S.BD=-S.DE*ux;S.BE=P;
+ const TC=v=>v>0?"T":v<0?"C":"-";
+ function draw(colMap){
+  svg.innerHTML='<rect x="0" y="0" width="520" height="220" fill="#0D223D"/><line x1="0" y1="152" x2="520" y2="152" stroke="rgba(255,255,255,.06)"/>';
+  let mems=[["A","B","AB"],["B","D","BD"],["A","E","AE"],["D","E","DE"],["B","E","BE"]];
+  mems.forEach(m=>{
+   let a=N[m[0]],b=N[m[1]],id=m[2],f=S[id];
+   let c="#9FB3C8",w=2.2;
+   if(colMap && colMap[id]==="ok"){ c=f<0?"#4F8FD6":"#E07A3A"; w=3.2; }
+   else if(colMap && colMap[id]==="bad"){ c="#E0504A"; w=3; }
+   svg.insertAdjacentHTML("beforeend",'<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round"/>');
+   let mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+   let label = (colMap&&colMap[id]) ? (Math.abs(f).toFixed(1)+" "+TC(f)) : id;
+   svg.insertAdjacentHTML("beforeend",'<text x="'+mx+'" y="'+(my-7)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="'+(colMap&&colMap[id]?8.5:8)+'" fill="'+c+'" font-weight="'+(colMap&&colMap[id]?700:400)+'">'+id+' '+label+'</text>');
+  });
+  for(let k in N){ let p=N[k]; svg.insertAdjacentHTML("beforeend",'<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#EEF3F9" stroke="#0B1C31" stroke-width="1.1"/><text x="'+p.x+'" y="'+(p.y+18)+'" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="8" fill="#7E94B0">'+k+'</text>');}
+  svg.insertAdjacentHTML("beforeend",'<polygon points="'+N.A.x+','+(N.A.y+6)+' '+(N.A.x-10)+','+(N.A.y+14)+' '+(N.A.x+10)+','+(N.A.y+14)+'" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.12)"/>');
+  svg.insertAdjacentHTML("beforeend",'<circle cx="'+N.D.x+'" cy="'+(N.D.y+4)+'" r="7" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.1"/>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.B.x,110,N.B.x,150,"#E07A3A",2.1,false,""));
+  svg.insertAdjacentHTML("beforeend",'<text x="'+N.B.x+'" y="102" text-anchor="middle" font-family="Cascadia Code,monospace" font-size="9" fill="#E07A3A">P=30</text>');
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.A.x,N.A.y+2,N.A.x,N.A.y-26,"#4F8FD6",1.6,false,""));
+  svg.insertAdjacentHTML("beforeend", lineArrow(N.D.x,N.D.y+2,N.D.x,N.D.y-26,"#4F8FD6",1.6,false,""));
+ }
+ function check(){
+  let ids=["Ay","Dy","AB","BD","AE","DE","BE"];
+  let vals={}; ids.forEach(id=> vals[id]=parseFloat(document.getElementById("ch"+id).value));
+  let col={}, bad=[], okCount=0;
+  ids.forEach(id=>{ let v=vals[id]; if(isNaN(v)||Math.abs(v-S[id])>0.85){ col[id]="bad"; bad.push(id+" exp "+S[id].toFixed(1)+" "+(S[id]>0?"T":"C")) } else { col[id]="ok"; okCount++; }});
+  draw(col);
+  if(okCount===ids.length){ fb.className="feedback show good"; fb.textContent="All correct. AB/BD about "+S.AB.toFixed(1)+" T/C? Check signs: AB "+S.AB.toFixed(1)+" , AE "+S.AE.toFixed(1)+", BE "+S.BE.toFixed(1)+"."; eq.textContent="Verified: sum Fy = "+(S.Ay+S.Dy-30).toFixed(1)+" , sum Fx = 0."; eq.classList.add("hl"); }
+  else { fb.className="feedback show bad"; fb.textContent=bad.join(" | "); eq.textContent=okCount+"/"+ids.length+" correct."; eq.classList.remove("hl"); }
+ }
+ document.getElementById("chCheck").onclick=check;
+ document.getElementById("chShow").onclick=()=>{ ["Ay","Dy","AB","BD","AE","DE","BE"].forEach(id=>{ document.getElementById("ch"+id).value=S[id].toFixed(1); }); check(); };
+ document.getElementById("chReset").onclick=()=>{ ["Ay","Dy","AB","BD","AE","DE","BE"].forEach(id=>{ document.getElementById("ch"+id).value=""; }); fb.className="feedback"; fb.textContent=""; eq.textContent=""; eq.classList.remove("hl"); draw(); };
+ draw();
+}
+</script>
+<script>
+function buildS7(main){
+ const s=section(7,"Quiz Lab","Cumulative","12 randomized questions drawn from all stages. Checks save; aim for 10/12.","<b>Sheet 7</b><br>Quiz");
+ const b=s.querySelector(".body");
+ b.innerHTML='<div class="prose"><span class="kicker">How it works</span><p><b>12 questions</b> random from a 36-question bank. Feedback explains each answer. Progress saves. Use <b>Retake</b> to reshuffle.</p><div class="eq" style="font-size:11px">No diagram tilts — components use cos for Fx, sin for Fy. T/C signs follow away-from-joint tension.</div></div>';
+ const wb=el("div","wb"); wb.innerHTML='<div class="wb-hd"><b>Quiz Lab</b><span class="tag" id="quizTag">12 questions</span></div><div class="wb-bd" id="quizBd"></div>';
+ b.appendChild(wb); main.appendChild(s);
+ setTimeout(()=>buildS7i(),0);
+}
+</script>
+<script>
+const BANK_S7=[
+ {q:"Triangle rigidity means:",a:["No in-plane mechanism without bar stretch","Heavier","More joints"],c:0,e:"Needs extension."},
+ {q:"Quadrilateral without diagonal:",a:["Mechanism","Rigid","Zero-force"],c:0,e:"Can shear."},
+ {q:"Diagonal makes:",a:["Two triangles, rigid","A mechanism","No change"],c:0,e:"Triangulates."},
+ {q:"Fx = F cos(theta) where theta from +x.",a:["True","False","Only for 3-4-5"],c:0,e:"Definition."},
+ {q:"F=60 N at 60 deg: Fx?",a:["30 N","52 N","60 N"],c:0,e:"cos60=0.5."},
+ {q:"F=50 N at 30 deg: Fy?",a:["25 N","43.3 N","50 N"],c:0,e:"sin30=0.5."},
+ {q:"Concurrent equilibrium:",a:["R=0 (Rx=0,Ry=0)","Moment only","Max F zero"],c:0,e:"Vector zero."},
+ {q:"Pin support:",a:["Ax and Ay","Only Ay","Only M"],c:0,e:"Two comps."},
+ {q:"Roller support:",a:["Only normal (Ay)","Ax and Ay","Moment"],c:0,e:"One comp."},
+ {q:"Simply supported L=8, P=20 at mid: By?",a:["10 kN","20 kN","5 kN"],c:0,e:"By=P/2."},
+ {q:"P at 0.25L: By?",a:["0.25 P","0.75 P","0.5 P"],c:0,e:"Moment about A."},
+ {q:"Ay+By equals:",a:["P (vertical)","0","2P"],c:0,e:"Fy=0."},
+ {q:"Two-force member:",a:["Forces equal, opposite, collinear","Zero","Moment"],c:0,e:"Idealization."},
+ {q:"Loads modeled:",a:["At joints","At midspan","At supports only"],c:0,e:"For these problems."},
+ {q:"Start joint has:",a:["2 or fewer unknowns","Most members","Any"],c:0,e:"Solvable."},
+ {q:"Tension at isolated joint points:",a:["Away from joint","Toward joint","Down"],c:0,e:"Pulls joint."},
+ {q:"Negative result:",a:["Compression","More tension","Zero"],c:0,e:"Sign flip."},
+ {q:"At A: Ay + F_AE*sin=0:",a:["F_AE negative if Ay up (depends geom)","Always positive","Zero"],c:0,e:"Sign from equilibrium."},
+ {q:"Section method:",a:["Cut and use equilibrium on one side","All joints","No equilibrium"],c:0,e:"One side FBD."},
+ {q:"Moment center choice:",a:["Where two unknowns intersect","Random","At load"],c:0,e:"Eliminate two."},
+ {q:"Zero-force: two non-collinear at unloaded joint:",a:["Both zero","Both T","One C"],c:0,e:"Equilibrium."},
+ {q:"Three members, two collinear, no load:",a:["Non-collinear zero","All zero","All T"],c:0,e:"Rule."},
+ {q:"Full truss first step:",a:["Reactions then joint with 2 unknowns","Random member","All sections"],c:0,e:"Procedure."},
+ {q:"Signed entry: +T / -C:",a:["Yes, tolerance 0.8 kN","No","Only T"],c:0,e:"Convention."},
+ {q:"Engineering check: sum Fy after solve:",a:["Should be ~0","Should be P","Irrelevant"],c:0,e:"Verify."},
+ {q:"Component of 100 N at 36.87 deg (3-4-5): Fy?",a:["60 N","80 N","100 N"],c:0,e:"sin 3-4-5 =0.6."},
+ {q:"Component Fx for same:",a:["80 N","60 N","100 N"],c:0,e:"cos =0.8."},
+ {q:"If a member is zero-force:",a:["Carries no load but may stabilize","Remove it","Large load"],c:0,e:"Stability."},
+ {q:"FBD isolation shows:",a:["All external forces on cut body","Only internal","Only reactions"],c:0,e:"External on FBD."},
+ {q:"Moment equation eliminates:",a:["Forces through the center","All forces","Only loads"],c:0,e:"Moment arm zero."},
+ {q:"Rigidity Lab: braced quad shear is:",a:["Much smaller for same handle move","Larger","Same as unbraced"],c:0,e:"Diagonal stiffness."},
+ {q:"Vector Lab: opposite of R balances:",a:["-R (same magnitude, opposite)","2R","R/2"],c:0,e:"Add -R."},
+ {q:"Beam with P at 0.75L: Ay?",a:["0.25 P","0.75 P","0.5 P"],c:0,e:"By=0.75P."},
+ {q:"F_BD in symmetric truss with center load:",a:["Equals F_AB","Zero","Double"],c:0,e:"Symmetry."},
+ {q:"Method of joints uses:",a:["Fx=0 and Fy=0 per joint","Moment only","Energy"],c:0,e:"Two eqns."},
+ {q:"Section can solve:",a:["Up to 3 unknowns per cut","Unlimited","Only 1"],c:0,e:"Three eqns."}
+];
+</script>
+<script>
+function buildS7i(){
+ const bd=document.getElementById("quizBd"), tag=document.getElementById("quizTag");
+ function pick12(){ let a=[...BANK_S7]; for(let i=a.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); let t=a[i];a[i]=a[j];a[j]=t} return a.slice(0,12); }
+ let qs=pick12(), ans=qs.map(()=>null), checked=false;
+ function render(){
+  bd.innerHTML="";
+  qs.forEach((q,i)=>{
+   let card=el("div","q-card"); card.style.marginTop=i?"10px":"0";
+   card.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:6px">Q'+(i+1)+'</div><div style="font-size:13.8px;color:var(--steel);margin-bottom:8px;line-height:1.5">'+q.q+'</div><div class="q-opts"></div><div class="feedback"></div>';
+   let opts=card.querySelector(".q-opts");
+   q.a.forEach((o,oi)=>{
+    let lab=el("label","choice"+(ans[i]===oi?" sel":"")); lab.innerHTML='<input type="radio" name="q'+i+'" '+(ans[i]===oi?"checked":"")+'> <span style="font-size:13.2px;color:var(--steel2)">'+o+'</span>';
+    lab.querySelector("input").addEventListener("change",()=>{ ans[i]=oi; render(); });
+    opts.appendChild(lab);
+   });
+   if(checked){
+    let fb=card.querySelector(".feedback"); fb.classList.add("show");
+    if(ans[i]===null){ fb.classList.add("bad"); fb.textContent="No answer."; }
+    else if(ans[i]===q.c){ fb.classList.add("good"); fb.textContent="Correct. "+q.e; }
+    else { fb.classList.add("bad"); fb.textContent="Not quite. "+q.e+" Correct: "+q.a[q.c]; }
+    let chs=[...opts.children]; chs.forEach((ch,oi)=>{ if(oi===q.c) ch.classList.add("correct"); if(ans[i]===oi&&oi!==q.c) ch.classList.add("wrong"); });
+   }
+   bd.appendChild(card);
+  });
+  let row=el("div","row"); row.style.marginTop="12px";
+  row.innerHTML='<button class="btn small" id="quizCheck">Check</button><button class="btn ghost small" id="quizRetake">Retake (reshuffle)</button><span class="hint" id="quizScore"></span>';
+  bd.appendChild(row);
+  let sc=document.getElementById("quizScore");
+  if(checked){ let s=ans.filter((v,i)=>v===qs[i].c).length; sc.textContent=s+"/12 "+(s>=10?"Ready":"Keep practicing"); tag.textContent=s+"/12"; if(s>=10){ done.add(7); saveDone(); updateProgText(); renderNav(); } else { done.delete(7); saveDone(); updateProgText(); renderNav(); } }
+  else { tag.textContent="12 questions"; }
+  document.getElementById("quizCheck").onclick=()=>{ checked=true; render(); };
+  document.getElementById("quizRetake").onclick=()=>{ qs=pick12(); ans=qs.map(()=>null); checked=false; done.delete(7); saveDone(); updateProgText(); renderNav(); render(); };
+ }
+ render();
+}
+</script>
+<script>
+(function(){
+ const main=document.getElementById("main");
+ function mount(){
+   if(!main) return;
+   main.innerHTML="";
+   try{ buildS0(main);}catch(e){console.error("S0",e)}
+   try{ buildS1(main);}catch(e){console.error("S1",e)}
+   try{ buildS2(main);}catch(e){console.error("S2",e)}
+   try{ buildS3(main);}catch(e){console.error("S3",e)}
+   try{ buildS4(main);}catch(e){console.error("S4",e)}
+   try{ buildS5(main);}catch(e){console.error("S5",e)}
+   try{ buildS6(main);}catch(e){console.error("S6",e)}
+   try{ buildS7(main);}catch(e){console.error("S7",e)}
+   renderNav(); updateProgText();
+ }
+ document.addEventListener("DOMContentLoaded", ()=>{
+   mount();
+   const rp=document.getElementById("resetProg");
+   if(rp) rp.onclick=()=>{
+     localStorage.removeItem("struct_done"); localStorage.removeItem("struct_checks");
+     done=new Set(); checks={}; mount();
+   };
+   window.addEventListener("hashchange", renderNav);
+ });
+})();
+</script>
+</body>
+</html>
